@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from yt_dlp import YoutubeDL
 import os
+import asyncio
 
 os.environ["FFMPEG_BINARY"] = "ffmpeg"
 
@@ -30,14 +31,11 @@ class music_cog(commands.Cog):
     async def play_next(self):
         if len(self.music_queue) > 0:
             self.is_playing = True
-
             m_url = self.music_queue[0][0]['source']
-
             self.music_queue.pop(0)
-            self.vc.play(discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next())
+            self.vc.play(discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.bot.loop.create_task(self.play_next()))
         else:
             self.is_playing = False
-        
 
     # infinite loop checking 
     async def play_music(self, ctx):
@@ -55,12 +53,15 @@ class music_cog(commands.Cog):
                 await self.vc.move_to(self.music_queue[0][1])
 
             self.music_queue.pop(0)
-
-            self.vc.play(discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next())
-
+            self.vc.play(discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.bot.loop.create_task(self.play_next()))
+    
         else:
             self.is_playing = False
 
+# BASIC MUSIC COMMANDS
+
+    # if user is in VC, joins channel and plays song
+    # if a song is currently playing, adds song to queue
     @commands.command(name="play", aliases=["p"], help="Plays a selected song from youtube")
     async def play(self, ctx, *args):
         query = " ".join(args)
@@ -86,30 +87,6 @@ class music_cog(commands.Cog):
                 if self.is_playing == False:
                     await self.play_music(ctx)
 
-    @commands.command(name="queue", aliases=["q"], help="Displays the current songs in queue")
-    async def queue(self, ctx):
-        retval = ""
-        for i in range(0, len(self.music_queue)):
-            retval += f"#{i+1} -" + self.music_queue[i][0]['title'] + "\n"
-
-        if retval != "":
-            await ctx.send(f"queue:\n{retval}")
-        else:
-            await ctx.send("No music in queue")
-    
-    @commands.command(name="skip", aliases=["s"], help="Skips the current song being played")
-    async def skip(self, ctx):
-        if self.vc != None and self.vc:
-            self.vc.stop()
-            await self.play_music(ctx)
-
-    @commands.command(name="clear", aliases=["c"], help="Stops the music and clears the queue")
-    async def clear(self, ctx):
-        if self.vc != None and self.is_playing:
-            self.vc.stop()
-        self.music_queue = []
-        await ctx.send("Music queue cleared")
-
     @commands.command(name="stop", help="Kick the bot from VC")
     async def dc(self, ctx):
         self.is_playing = False
@@ -133,3 +110,30 @@ class music_cog(commands.Cog):
             self.is_paused = False
             self.is_playing = True
             self.vc.resume()
+
+# QUEUE MANAGEMENT COMMANDS
+
+    # displays queue only
+    @commands.command(name="queue", aliases=["q"], help="Displays the current songs in queue")
+    async def queue(self, ctx):
+        retval = ""
+        for i in range(0, len(self.music_queue)):
+            retval += f"#{i+1} -" + self.music_queue[i][0]['title'] + "\n"
+
+        if retval != "":
+            await ctx.send(f"queue:\n{retval}")
+        else:
+            await ctx.send("No music in queue")
+    
+    @commands.command(name="skip", aliases=["s"], help="Skips the current song being played")
+    async def skip(self, ctx):
+        if self.vc != None and self.vc:
+            self.vc.stop()
+            await self.play_music(ctx)
+
+    @commands.command(name="clear", aliases=["c"], help="Stops the music and clears the queue")
+    async def clear(self, ctx):
+        if self.vc != None and self.is_playing:
+            self.vc.stop()
+        self.music_queue = []
+        await ctx.send("Music queue cleared")

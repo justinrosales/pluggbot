@@ -23,12 +23,12 @@ conda install discord.py
 
 ### Roadmap
 
-- [x] play music via search or youtueb link
-- [x] basic music commands
-- [ ] `remove` command - removes last song from the queue
+- [x] play music via search or youtube link
+- [x] basic music commands (help, play, stop, pause, resume)
+- [ ] queue management commands (~~queue~~, ~~skip~~, ~~clear~~, remove)
 - [ ] `prefix` command - changes bot prefix command
 - [ ] Integrate Spotify + SoundCloud (currently only supports YouTube)
 
 ### Current Bugs
 
-- Certain songs do not work, bot times out. Only occurs when user searches the song instead of playing a song via song URL
+- Music stops in the middle of the song

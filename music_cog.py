@@ -1,33 +1,9 @@
 import discord
 from discord.ext import commands
 from yt_dlp import YoutubeDL
+import os
 
-from discord import opus
-import platform
-from ctypes import CDLL
-
-###
-# temp fix for error, added this code to set the Opus library path
-# opus would not load on my device -> might be device specific
-def load_opus_library():
-    system = platform.system()
-    if system == "Darwin":  # macOS
-        path = "/opt/homebrew/lib/libopus.dylib"
-    elif system == "Linux":
-        path = "libopus.so"
-    elif system == "Windows":
-        path = "libopus.dll"
-    else:
-        raise RuntimeError(f"Unsupported OS: {system}")
-
-    try:
-        CDLL(path)
-        print(f"Loaded Opus library from: {path}")
-    except OSError as e:
-        raise RuntimeError(f"Failed to load Opus library: {e}")
-
-load_opus_library()
-###
+os.environ["FFMPEG_BINARY"] = "ffmpeg"
 
 class music_cog(commands.Cog):
     def __init__(self, bot):
@@ -85,7 +61,7 @@ class music_cog(commands.Cog):
         else:
             self.is_playing = False
 
-    @commands.command(name="play", aliases=["p","playing"], help="Plays a selected song from youtube")
+    @commands.command(name="play", aliases=["p"], help="Plays a selected song from youtube")
     async def play(self, ctx, *args):
         query = " ".join(args)
 
@@ -110,6 +86,36 @@ class music_cog(commands.Cog):
                 if self.is_playing == False:
                     await self.play_music(ctx)
 
+    @commands.command(name="queue", aliases=["q"], help="Displays the current songs in queue")
+    async def queue(self, ctx):
+        retval = ""
+        for i in range(0, len(self.music_queue)):
+            retval += f"#{i+1} -" + self.music_queue[i][0]['title'] + "\n"
+
+        if retval != "":
+            await ctx.send(f"queue:\n{retval}")
+        else:
+            await ctx.send("No music in queue")
+    
+    @commands.command(name="skip", aliases=["s"], help="Skips the current song being played")
+    async def skip(self, ctx):
+        if self.vc != None and self.vc:
+            self.vc.stop()
+            await self.play_music(ctx)
+
+    @commands.command(name="clear", aliases=["c"], help="Stops the music and clears the queue")
+    async def clear(self, ctx):
+        if self.vc != None and self.is_playing:
+            self.vc.stop()
+        self.music_queue = []
+        await ctx.send("Music queue cleared")
+
+    @commands.command(name="stop", help="Kick the bot from VC")
+    async def dc(self, ctx):
+        self.is_playing = False
+        self.is_paused = False
+        await self.vc.disconnect()
+
     @commands.command(name="pause", help="Pauses the current song being played")
     async def pause(self, ctx, *args):
         if self.is_playing:
@@ -121,39 +127,9 @@ class music_cog(commands.Cog):
             self.is_playing = True
             self.vc.resume()
 
-    @commands.command(name = "resume", aliases=["r"], help="Resumes playing with the discord bot")
+    @commands.command(name = "resume", help="Resumes playing with the discord bot")
     async def resume(self, ctx, *args):
         if self.is_paused:
             self.is_paused = False
             self.is_playing = True
             self.vc.resume()
-
-    @commands.command(name="skip", aliases=["s"], help="Skips the current song being played")
-    async def skip(self, ctx):
-        if self.vc != None and self.vc:
-            self.vc.stop()
-            await self.play_music(ctx)
-
-    @commands.command(name="queue", aliases=["q"], help="Displays the current songs in queue")
-    async def queue(self, ctx):
-        retval = ""
-        for i in range(0, len(self.music_queue)):
-            retval += f"#{i+1} -" + self.music_queue[i][0]['title'] + "\n"
-
-        if retval != "":
-            await ctx.send(f"```queue:\n{retval}```")
-        else:
-            await ctx.send("```No music in queue```")
-
-    @commands.command(name="clear", aliases=["c", "bin"], help="Stops the music and clears the queue")
-    async def clear(self, ctx):
-        if self.vc != None and self.is_playing:
-            self.vc.stop()
-        self.music_queue = []
-        await ctx.send("```Music queue cleared```")
-
-    @commands.command(name="stop", aliases=["disconnect", "l", "d"], help="Kick the bot from VC")
-    async def dc(self, ctx):
-        self.is_playing = False
-        self.is_paused = False
-        await self.vc.disconnect()

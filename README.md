@@ -12,7 +12,7 @@
 
 Creating virtual environement **highly recommended**
 
-You can use [Conda](https://anaconda.org/anaconda/conda) to set up the environment and install neccesseary dependencies
+You can use [Conda](https://anaconda.org/anaconda/conda) to set up the environment and install necessary dependencies
 
 ```
 conda create --name pluggbot python=3.9

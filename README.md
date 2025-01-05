@@ -1,6 +1,6 @@
 ### External Software
 
-- [ffmpeg](https://ffmpeg.org/download.html) - download download and add it to your system's `PATH` environment variable
+- [ffmpeg](https://ffmpeg.org/download.html) - download and add it to your system's `PATH` environment variable
 
 ### Other Depdendencies
 

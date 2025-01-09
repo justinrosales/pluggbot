@@ -10,12 +10,10 @@
 - yt_dlp
 - python-dotenv
 
-Creating virtual environement **highly recommended**
-
-You can use [Conda](https://anaconda.org/anaconda/conda) to set up the environment and install necessary dependencies
+I recommend using a virtual environment. You can use [Conda](https://anaconda.org/anaconda/conda) to set up the environment and install necessary dependencies
 
 ```
-conda create --name pluggbot python=3.9
+conda create --name myenv python=3.9
 conda activate myenv
 conda install discord.py
 ...

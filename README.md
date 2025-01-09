@@ -10,7 +10,7 @@
 - yt_dlp
 - python-dotenv
 
-I recommend using a virtual environment. You can use [Conda](https://anaconda.org/anaconda/conda) to set up the environment and install necessary dependencies
+I recommend setting up a virtual environtment (e.g. [Conda](https://anaconda.org/anaconda/conda)) to manage dependencies
 
 ```
 conda create --name myenv python=3.9
@@ -22,8 +22,7 @@ conda install discord.py
 ### Roadmap
 
 - [x] play music via search or youtube link
-- [x] basic music commands (help, play, stop, pause, resume)
-- [ ] queue management commands (~~queue~~, ~~skip~~, ~~clear~~, remove)
+- [x] basic music/queue management commands
 - [ ] `prefix` command - changes bot prefix command
 - [ ] Integrate Spotify + SoundCloud (currently only supports YouTube)
 - [ ] DEPLOY!

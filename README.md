@@ -28,6 +28,7 @@ conda install discord.py
 - [ ] queue management commands (~~queue~~, ~~skip~~, ~~clear~~, remove)
 - [ ] `prefix` command - changes bot prefix command
 - [ ] Integrate Spotify + SoundCloud (currently only supports YouTube)
+- [ ] DEPLOY!
 
 ### Current Bugs
 

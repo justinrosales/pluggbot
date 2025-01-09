@@ -16,6 +16,7 @@ class music_cog(commands.Cog):
         self.music_queue = []
         self.YDL_OPTIONS = {'format': 'bestaudio/best'}
         self.FFMPEG_OPTIONS = {'options': '-vn'}
+        self.BEFORE_OPTIONS = '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5'
 
         self.vc = None
 
@@ -33,7 +34,11 @@ class music_cog(commands.Cog):
             self.is_playing = True
             m_url = self.music_queue[0][0]['source']
             self.music_queue.pop(0)
-            self.vc.play(discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.bot.loop.create_task(self.play_next()))
+            self.vc.play(
+                discord.FFmpegPCMAudio(m_url, before_options=self.BEFORE_OPTIONS, options=self.FFMPEG_OPTIONS['options']),
+                after=lambda e: self.bot.loop.create_task(self.play_next())
+            )
+            
         else:
             self.is_playing = False
 
@@ -53,8 +58,10 @@ class music_cog(commands.Cog):
                 await self.vc.move_to(self.music_queue[0][1])
 
             self.music_queue.pop(0)
-            self.vc.play(discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.bot.loop.create_task(self.play_next()))
-    
+            self.vc.play(
+                discord.FFmpegPCMAudio(m_url, before_options=self.BEFORE_OPTIONS, options=self.FFMPEG_OPTIONS['options']),
+                after=lambda e: self.bot.loop.create_task(self.play_next())
+            )    
         else:
             self.is_playing = False
 

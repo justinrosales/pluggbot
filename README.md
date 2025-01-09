@@ -29,7 +29,3 @@ conda install discord.py
 - [ ] `prefix` command - changes bot prefix command
 - [ ] Integrate Spotify + SoundCloud (currently only supports YouTube)
 - [ ] DEPLOY!
-
-### Current Bugs
-
-- Music stops in the middle of the song

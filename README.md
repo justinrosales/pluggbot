@@ -22,7 +22,8 @@ conda install discord.py
 ### Roadmap
 
 - [x] play music via search or youtube link
-- [x] basic music/queue management commands
+- [x] add music/queue management commands
 - [ ] `prefix` command - changes bot prefix command
-- [ ] Integrate Spotify + SoundCloud (currently only supports YouTube)
-- [ ] DEPLOY!
+- [ ] add support for SoundCloud/~~Spotify~~
+  - Spotify API does not provide access to raw audio streams due to licensing restrictions. Instead, it only allows metadata retrieval (e.g., track name, artist, album)
+- [ ] deploy
